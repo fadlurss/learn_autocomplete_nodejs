@@ -56,28 +56,42 @@
         <h2>An extremely lightweight and powerful vanilla JavaScript completion suggester.</h2>
     </div>
     <form onsubmit="return false" class="pure-form" style="border-top: 1px solid #eee;border-bottom:1px solid #eee;background:#fafafa;margin:30px 0;padding:20px 10px;text-align:center">
-        <input type="text" name="name"  placeholder="Name of fruit ..." style="width:100%;max-width:600px;outline:0">
+        <input type="text" name="namefruit" id="namefruit"  placeholder="Name of fruit ..." style="width:100%;max-width:600px;outline:0"><br><br><br>
+        <input type="text" name="class" id="class" disabled  style="width:100%;max-width:600px;outline:0">
     </form>
     
 
-   
+    <script src="/js/jquery.min.js"></script>
     <script src="/js/auto-complete.js"></script>
     <script>
 
         var demo2 = new autoComplete({
-            selector: '#name',
+            selector: '#namefruit',
             minChars: 1,
             source: function(term, suggest){
                 term = term.toLowerCase();
-                var contoh = $.getJSON("http://localhost:5000/fruit/contoh").then((res)=>{
+                var contoh = $.getJSON("http://localhost:5000/fruit/get_name_fruit").then((res)=>{
                     var choices = res;
                     var suggestions = [];
                     for (i=0;i<choices.length;i++)
                         if (~choices[i].toLowerCase().indexOf(term)) suggestions.push(choices[i]);
                     suggest(suggestions);
                 });
+                
             }
         });
+
+        $("#namefruit").on("change",function(){
+           np = $(this).val();
+           $.post("http://localhost:5000/fruit/search_class_fruit",{np:np}).then((r)=>{
+               console.log(r);
+               if (r.length > 0) {
+                   $("#class").val(r[0].class);
+               }else{
+                   alert("Nama Tidak Ditemukan");
+               }
+           });
+       });
 
         
     </script>
